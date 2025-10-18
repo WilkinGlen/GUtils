@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Net;
+using System.Reflection;
 
 public class PocoCopier
 {
@@ -40,20 +41,54 @@ public class PocoCopier
 
     private class IgnoreDelegateContractResolver : DefaultContractResolver
     {
+        private readonly HashSet<string> readOnlyPropertiesWithBackingFields = [];
+
         protected override List<System.Reflection.MemberInfo> GetSerializableMembers(Type objectType)
         {
             var members = base.GetSerializableMembers(objectType);
+
             var privateFields = objectType
-                .GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
                 .Where(f => !members.Contains(f) && !f.Name.Contains("k__BackingField"))
-                .Cast<System.Reflection.MemberInfo>();
-            var allMembers = members.Concat(privateFields).ToList();
+                .ToList();
+
+            var backingFieldsToExclude = new HashSet<FieldInfo>();
+            var publicProperties = objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            this.readOnlyPropertiesWithBackingFields.Clear();
+
+            foreach (var property in publicProperties)
+            {
+                if (property.CanRead && property.GetSetMethod(true) == null)
+                {
+                    var potentialBackingField = privateFields.FirstOrDefault(f =>
+                    {
+                        var expectedName1 = $"_{char.ToLower(property.Name[0])}{property.Name[1..]}";
+                        var expectedName2 = $"_{property.Name}";
+
+                        return (f.Name == expectedName1 || f.Name == expectedName2) && (f.FieldType == property.PropertyType ||
+                               property.PropertyType.IsAssignableFrom(f.FieldType));
+                    });
+
+                    if (potentialBackingField != null)
+                    {
+                        _ = backingFieldsToExclude.Add(potentialBackingField);
+                        _ = this.readOnlyPropertiesWithBackingFields.Add($"{objectType.FullName}.{property.Name}");
+                    }
+                }
+            }
+
+            var fieldsToInclude = privateFields
+                .Where(f => !backingFieldsToExclude.Contains(f))
+                .Cast<MemberInfo>();
+
+            var allMembers = members.Concat(fieldsToInclude).ToList();
 
             return allMembers;
         }
 
         protected override JsonProperty CreateProperty(
-            System.Reflection.MemberInfo member,
+            MemberInfo member,
             MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);
@@ -62,14 +97,31 @@ public class PocoCopier
                 property.ShouldSerialize = _ => false;
             }
 
-            if (property.DeclaringType == typeof(System.Net.IPAddress) &&
+            if (property.DeclaringType == typeof(IPAddress) &&
                 property.PropertyName == "ScopeId")
             {
                 property.ShouldSerialize = _ => false;
             }
 
             property.Readable = true;
-            property.Writable = true;
+
+            if (member is PropertyInfo propInfo)
+            {
+                var fullPropertyName = $"{propInfo.DeclaringType?.FullName}.{propInfo.Name}";
+                if (this.readOnlyPropertiesWithBackingFields.Contains(fullPropertyName))
+                {
+                    property.Writable = false;
+                }
+                else
+                {
+                    // Only mark writable if the property actually has a setter
+                    property.Writable = propInfo.GetSetMethod(true) != null;
+                }
+            }
+            else
+            {
+                property.Writable = true;
+            }
 
             return property;
         }

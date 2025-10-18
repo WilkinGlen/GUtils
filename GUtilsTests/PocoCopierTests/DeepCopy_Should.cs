@@ -865,6 +865,134 @@ public class DeepCopy_Should
         _ = copy.Should().BeEquivalentTo(original);
     }
 
+    [Fact]
+    public void CopyObjectWithPrivateFields()
+    {
+        var original = new ClassWithPrivateFields(10, "private");
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.GetPrivateInt().Should().Be(10);
+        _ = copy.GetPrivateString().Should().Be("private");
+    }
+
+    [Fact]
+    public void CopyObjectWithPrivateNestedObject()
+    {
+        var original = new ClassWithPrivateNestedObject(new SimpleTestClass { Id = 5, Name = "Nested" });
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.GetNestedObject().Should().NotBeSameAs(original.GetNestedObject());
+        _ = copy.GetNestedObject().Id.Should().Be(5);
+    }
+
+    [Fact]
+    public void CopyObjectWithPrivateCollection()
+    {
+        var original = new ClassWithPrivateCollection([1, 2, 3]);
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.GetItems().Should().NotBeSameAs(original.GetItems());
+        _ = copy.GetItems().Should().BeEquivalentTo([1, 2, 3]);
+    }
+
+    [Fact]
+    public void CopyObjectWithBackingFieldAndProperty_NoDuplicationOccurs()
+    {
+        var original = new ClassWithExplicitBackingField();
+        original.AddItem("A");
+        original.AddItem("B");
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Items.Should().HaveCount(2, "backing fields should not cause duplication");
+        _ = copy.Items.Should().BeEquivalentTo(["A", "B"]);
+    }
+
+    [Fact]
+    public void CopyObjectWithConstants_ConstantsRemainUnaffected()
+    {
+        var original = new ClassWithConstants { InstanceValue = 100 };
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.InstanceValue.Should().Be(100);
+        _ = ClassWithConstants.ConstantValue.Should().Be(42);
+    }
+
+    [Fact]
+    public void CopyObjectWithMultipleBackingFields_NoDuplication()
+    {
+        var original = new ClassWithMultipleBackingFields();
+        original.AddToList1("A");
+        original.AddToList2("B");
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.List1.Should().HaveCount(1, "first backing field should not cause duplication");
+        _ = copy.List2.Should().HaveCount(1, "second backing field should not cause duplication");
+        _ = copy.List1.Should().BeEquivalentTo(["A"]);
+        _ = copy.List2.Should().BeEquivalentTo(["B"]);
+    }
+
+    [Fact]
+    public void CopyObjectWithUnconventionalBackingFieldName_HandlesCorrectly()
+    {
+        var original = new ClassWithUnconventionalNaming();
+        original.AddItem("Test");
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Items.Should().Contain("Test");
+    }
+
+    [Fact]
+    public void CopyObjectWithMixedBackingFields_HandlesCorrectly()
+    {
+        var original = new ClassWithMixedBackingFields(5);
+        original.AddItem("A");
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Items.Should().HaveCount(1, "backing field with public property should not duplicate");
+        _ = copy.Items.Should().BeEquivalentTo(["A"]);
+        _ = copy.GetPrivateValue().Should().Be(5, "private field without public property should be copied");
+    }
+
+    [Fact]
+    public void CopyNestedObjectsWithBackingFields_NoDuplication()
+    {
+        var original = new OuterClassWithBackingField();
+        original.Inner.AddItem("X");
+
+        var copy = PocoCopier.DeepCopy(original);
+
+        _ = copy.Inner.Should().NotBeSameAs(original.Inner);
+        _ = copy.Inner.Items.Should().HaveCount(1, "nested object backing fields should not duplicate");
+        _ = copy.Inner.Items.Should().BeEquivalentTo(["X"]);
+    }
+
+    [Fact]
+    public void CopyObjectWithModifiableCollectionThroughMethod_WorksCorrectly()
+    {
+        var original = new ClassWithModifiableCollection();
+        original.AddItem("Item1");
+        original.AddItem("Item2");
+
+        var copy = PocoCopier.DeepCopy(original);
+        copy.AddItem("Item3");
+
+        _ = original.Items.Should().HaveCount(2, "original should not be affected by changes to copy");
+        _ = copy.Items.Should().HaveCount(3);
+        _ = copy.Items.Should().BeEquivalentTo(["Item1", "Item2", "Item3"]);
+    }
+
     private class SimpleTestClass
     {
         public int Id { get; set; }
@@ -1117,4 +1245,183 @@ public class DeepCopy_Should
     }
 
     private record struct TestRecordStruct(int Id, string Name);
+
+    private class ClassWithPrivateFields(int privateInt, string privateString)
+    {
+        private readonly int _privateInt = privateInt;
+        private readonly string _privateString = privateString;
+
+        public int GetPrivateInt()
+        {
+            return this._privateInt;
+        }
+
+        public string GetPrivateString()
+        {
+            return this._privateString;
+        }
+    }
+
+    private class ClassWithPrivateNestedObject
+    {
+        private readonly SimpleTestClass _nested;
+
+        public ClassWithPrivateNestedObject(SimpleTestClass nested)
+        {
+            this._nested = nested;
+        }
+
+        public SimpleTestClass GetNestedObject()
+        {
+            return this._nested;
+        }
+    }
+
+    private class ClassWithPrivateCollection
+    {
+        private readonly List<int> _items;
+
+        public ClassWithPrivateCollection(List<int> items)
+        {
+            this._items = items;
+        }
+
+        public List<int> GetItems()
+        {
+            return this._items;
+        }
+    }
+
+    private class ClassWithExplicitBackingField
+    {
+        public List<string> Items { get; } = [];
+
+        public void AddItem(string item)
+        {
+            this.Items.Add(item);
+        }
+    }
+
+    private struct TestStruct
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public string? Name { get; set; }
+    }
+
+    private class ClassWithNestedPrivateClass
+    {
+        private readonly PrivateNestedClass _nested;
+
+        private ClassWithNestedPrivateClass(PrivateNestedClass nested)
+        {
+            this._nested = nested;
+        }
+
+        public static ClassWithNestedPrivateClass Create(int value)
+        {
+            return new ClassWithNestedPrivateClass(new PrivateNestedClass(value));
+        }
+
+        public int GetValue()
+        {
+            return this._nested.Value;
+        }
+
+        private class PrivateNestedClass
+        {
+            public int Value { get; }
+
+            public PrivateNestedClass(int value)
+            {
+                this.Value = value;
+            }
+        }
+    }
+
+    private class ClassWithConstants
+    {
+        public const int ConstantValue = 42;
+        public int InstanceValue { get; set; }
+    }
+
+    private class ClassWithMultipleBackingFields
+    {
+        public List<string> List1 { get; } = [];
+        public List<string> List2 { get; } = [];
+
+        public void AddToList1(string item)
+        {
+            this.List1.Add(item);
+        }
+
+        public void AddToList2(string item)
+        {
+            this.List2.Add(item);
+        }
+    }
+
+    private class ClassWithUnconventionalNaming
+    {
+        public List<string> Items { get; } = [];
+
+        public void AddItem(string item)
+        {
+            this.Items.Add(item);
+        }
+    }
+
+    private class ClassWithMixedBackingFields
+    {
+        private readonly int _privateValue;
+
+        public List<string> Items { get; } = [];
+
+        public ClassWithMixedBackingFields(int value)
+        {
+            this._privateValue = value;
+        }
+
+        public void AddItem(string item)
+        {
+            this.Items.Add(item);
+        }
+
+        public int GetPrivateValue()
+        {
+            return this._privateValue;
+        }
+    }
+
+    private class OuterClassWithBackingField
+    {
+        public ClassWithExplicitBackingField Inner { get; set; } = new();
+    }
+
+    private class ClassWithModifiableCollection
+    {
+        private readonly List<string> _items = [];
+        public IReadOnlyList<string> Items => this._items;
+
+        public void AddItem(string item)
+        {
+            this._items.Add(item);
+        }
+    }
+
+    private class ClassWithTransformingProperty
+    {
+        private int _value;
+        public int DoubledValue => this._value * 2;
+
+        public void SetValue(int value)
+        {
+            this._value = value;
+        }
+    }
+
+    private class ClassWithNullableBackingField
+    {
+        public List<string>? Items { get; } = null;
+    }
 }
