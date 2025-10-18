@@ -109,14 +109,7 @@ public class ClassCopier
             if (member is PropertyInfo propInfo)
             {
                 var fullPropertyName = $"{propInfo.DeclaringType?.FullName}.{propInfo.Name}";
-                if (this.readOnlyPropertiesWithBackingFields.Contains(fullPropertyName))
-                {
-                    property.Writable = false;
-                }
-                else
-                {
-                    property.Writable = propInfo.GetSetMethod(true) != null;
-                }
+                property.Writable = !this.readOnlyPropertiesWithBackingFields.Contains(fullPropertyName) && propInfo.GetSetMethod(true) != null;
             }
             else
             {
