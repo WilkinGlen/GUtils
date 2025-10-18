@@ -10,7 +10,7 @@ public class DeepCopy_Should
     {
         var original = new SimpleTestClass { Id = 1, Name = "Test" };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Id.Should().Be(original.Id);
@@ -27,7 +27,7 @@ public class DeepCopy_Should
             Items = ["Item1", "Item2"]
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Inner.Should().NotBeSameAs(original.Inner);
@@ -48,7 +48,7 @@ public class DeepCopy_Should
             Items = ["Item1", "Item2"]
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
         copy.Id = 99;
         copy.Inner.Name = "Modified";
         copy.Items.Add("Item3");
@@ -64,7 +64,7 @@ public class DeepCopy_Should
     {
         SimpleTestClass? nullObject = null;
 
-        var action = () => PocoCopier.DeepCopy(nullObject);
+        var action = () => ClassCopier.DeepCopy(nullObject);
         _ = action.Should().Throw<ArgumentNullException>()
             .WithParameterName("source");
     }
@@ -74,7 +74,7 @@ public class DeepCopy_Should
     {
         var original = 42;
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().Be(original);
     }
@@ -84,7 +84,7 @@ public class DeepCopy_Should
     {
         var original = new TestRecord(1, "Test");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().Be(original);
@@ -95,7 +95,7 @@ public class DeepCopy_Should
     {
         var original = "Test String";
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().Be(original);
     }
@@ -105,7 +105,7 @@ public class DeepCopy_Should
     {
         var original = new List<string>();
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEmpty();
@@ -120,7 +120,7 @@ public class DeepCopy_Should
             new() { Id = 2, Name = "Second" }
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy[0].Should().NotBeSameAs(original[0]);
@@ -140,7 +140,7 @@ public class DeepCopy_Should
             ["three"] = 3
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -159,7 +159,7 @@ public class DeepCopy_Should
             JaggedArray = [[1, 2], [3, 4, 5]]
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Data.Should().NotBeSameAs(original.Data);
@@ -180,7 +180,7 @@ public class DeepCopy_Should
             Duration = TimeSpan.FromHours(2.5)
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.CreatedDate.Should().Be(original.CreatedDate);
@@ -198,7 +198,7 @@ public class DeepCopy_Should
             NullableObject = new SimpleTestClass { Id = 1, Name = "Nested" }
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.NullableInt.Should().Be(42);
@@ -217,7 +217,7 @@ public class DeepCopy_Should
             NullableObject = null
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.NullableInt.Should().BeNull();
@@ -230,7 +230,7 @@ public class DeepCopy_Should
     {
         var original = new[] { 1, 2, 3, 4, 5 };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -245,7 +245,7 @@ public class DeepCopy_Should
             Name = "Test with \"quotes\", newlines\n, tabs\t, and unicode: 🎉"
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Name.Should().Be(original.Name);
@@ -256,7 +256,7 @@ public class DeepCopy_Should
     {
         var original = Guid.NewGuid();
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().Be(original);
     }
@@ -267,8 +267,8 @@ public class DeepCopy_Should
         var originalDecimal = 123.456m;
         var originalDouble = 789.012;
 
-        var copyDecimal = PocoCopier.DeepCopy(originalDecimal);
-        var copyDouble = PocoCopier.DeepCopy(originalDouble);
+        var copyDecimal = ClassCopier.DeepCopy(originalDecimal);
+        var copyDouble = ClassCopier.DeepCopy(originalDouble);
 
         _ = copyDecimal.Should().Be(originalDecimal);
         _ = copyDouble.Should().Be(originalDouble);
@@ -279,7 +279,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithMethods { Value = 10, Name = "Test" };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Value.Should().Be(10);
@@ -295,7 +295,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithMethods { Value = 10, Name = "Original" };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
         copy.Value = 50;
         copy.Name = "Modified";
 
@@ -316,7 +316,7 @@ public class DeepCopy_Should
         original.RaiseValueChanged();
         _ = eventFired.Should().BeTrue();
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Id.Should().Be(1);
@@ -332,7 +332,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithEvents { Id = 1 };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
         var copyEventFired = false;
         string? receivedName = null;
 
@@ -354,7 +354,7 @@ public class DeepCopy_Should
         var copyEventFired = false;
         original.ValueChanged += (sender, args) => originalEventFired = true;
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         copy.ValueChanged += (sender, args) => copyEventFired = true;
 
@@ -382,7 +382,7 @@ public class DeepCopy_Should
         _ = executeCalled.Should().BeTrue();
         _ = original.Calculator?.Invoke(5).Should().Be(10);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Id.Should().Be(1);
@@ -394,7 +394,7 @@ public class DeepCopy_Should
     public void CopyObjectWithDelegate_CanAssignDelegatesToCopy()
     {
         var original = new ClassWithDelegate { Id = 1 };
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         var executedOnCopy = false;
 
@@ -412,7 +412,7 @@ public class DeepCopy_Should
         var child = new NodeWithCircularRef { Id = 2, Parent = parent };
         parent.Child = child;
 
-        var copy = PocoCopier.DeepCopy(parent);
+        var copy = ClassCopier.DeepCopy(parent);
 
         _ = copy.Should().NotBeSameAs(parent);
         _ = copy.Id.Should().Be(1);
@@ -424,7 +424,7 @@ public class DeepCopy_Should
     {
         var original = TestEnum.SecondValue;
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().Be(original);
     }
@@ -434,7 +434,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithEnum { Id = 1, Status = TestEnum.SecondValue };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Status.Should().Be(TestEnum.SecondValue);
@@ -445,7 +445,7 @@ public class DeepCopy_Should
     {
         var original = new int[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy[0, 0].Should().Be(1);
@@ -457,7 +457,7 @@ public class DeepCopy_Should
     {
         var original = new HashSet<string> { "one", "two", "three" };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -471,7 +471,7 @@ public class DeepCopy_Should
         original.Enqueue(2);
         original.Enqueue(3);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -485,7 +485,7 @@ public class DeepCopy_Should
         original.Push("second");
         original.Push("third");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -496,7 +496,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithPrivateSetters(42, "Test");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Id.Should().Be(42);
@@ -508,7 +508,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithReadOnlyField("readonly value") { Id = 1 };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Id.Should().Be(1);
@@ -520,7 +520,7 @@ public class DeepCopy_Should
     {
         var original = (Id: 1, Name: "Test", Value: 42.5);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().Be(original);
     }
@@ -532,7 +532,7 @@ public class DeepCopy_Should
         original.Add("key1", 100);
         original.Add("key2", 200);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
     }
@@ -543,7 +543,7 @@ public class DeepCopy_Should
         ClassWithStatic.StaticValue = 999;
         var original = new ClassWithStatic { InstanceValue = 42 };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.InstanceValue.Should().Be(42);
@@ -555,7 +555,7 @@ public class DeepCopy_Should
     {
         var original = new Uri("https://github.com/copilot");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.ToString().Should().Be(original.ToString());
@@ -570,7 +570,7 @@ public class DeepCopy_Should
             DerivedProperty = "derived"
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.BaseProperty.Should().Be("base");
@@ -586,7 +586,7 @@ public class DeepCopy_Should
             ConcreteValue = 20
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeOfType<ConcreteImplementation>();
@@ -602,7 +602,7 @@ public class DeepCopy_Should
             Name = "Test"
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeOfType<InterfaceImplementation>();
@@ -617,7 +617,7 @@ public class DeepCopy_Should
             original.Add(new SimpleTestClass { Id = i, Name = $"Item {i}" });
         }
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().HaveCount(10000);
@@ -641,7 +641,7 @@ public class DeepCopy_Should
             }
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Level2.Should().NotBeSameAs(original.Level2);
@@ -653,7 +653,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithInitOnlyProperty { Id = 1, InitValue = "init" };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Id.Should().Be(1);
@@ -665,7 +665,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithRequiredProperty { RequiredId = 42, RequiredName = "Required" };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.RequiredId.Should().Be(42);
@@ -681,7 +681,7 @@ public class DeepCopy_Should
             Data = [0x01, 0x02, 0x03, 0xFF]
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Data.Should().NotBeSameAs(original.Data);
@@ -693,7 +693,7 @@ public class DeepCopy_Should
     {
         var original = new KeyValuePair<string, int>("key", 42);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Key.Should().Be("key");
         _ = copy.Value.Should().Be(42);
@@ -708,7 +708,7 @@ public class DeepCopy_Should
             Record = new TestRecord(2, "Nested")
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Record.Should().Be(original.Record);
@@ -719,7 +719,7 @@ public class DeepCopy_Should
     {
         var original = string.Empty;
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().Be(string.Empty);
     }
@@ -729,7 +729,7 @@ public class DeepCopy_Should
     {
         var original = new SimpleTestClass { Id = 1, Name = "   \t\n   " };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Name.Should().Be(original.Name);
@@ -741,7 +741,7 @@ public class DeepCopy_Should
         var longString = new string('x', 100_000);
         var original = new SimpleTestClass { Id = 1, Name = longString };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Name.Should().HaveLength(100_000);
@@ -757,7 +757,7 @@ public class DeepCopy_Should
             [2] = "two"
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -769,7 +769,7 @@ public class DeepCopy_Should
     {
         var original = new LinkedList<int>([1, 2, 3, 4, 5]);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -784,7 +784,7 @@ public class DeepCopy_Should
             Date = new DateOnly(2024, 12, 25)
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Time.Should().Be(original.Time);
@@ -796,7 +796,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithVersion { Version = new Version(1, 2, 3, 4) };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Version.Should().Be(original.Version);
@@ -810,7 +810,7 @@ public class DeepCopy_Should
             Address = System.Net.IPAddress.Parse("192.168.1.1")
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Address.ToString().Should().Be("192.168.1.1");
@@ -824,7 +824,7 @@ public class DeepCopy_Should
             PublicValue = "public"
         };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.PublicValue.Should().Be("public");
@@ -836,7 +836,7 @@ public class DeepCopy_Should
     {
         var original = new TestRecordStruct(1, "Test");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().Be(original);
     }
@@ -846,7 +846,7 @@ public class DeepCopy_Should
     {
         var original = new List<string?> { "one", null, "three", null };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().HaveCount(4);
@@ -859,7 +859,7 @@ public class DeepCopy_Should
     {
         var original = new System.Collections.ObjectModel.ReadOnlyCollection<int>([1, 2, 3]);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.Should().BeEquivalentTo(original);
@@ -870,7 +870,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithPrivateFields(10, "private");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.GetPrivateInt().Should().Be(10);
@@ -882,7 +882,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithPrivateNestedObject(new SimpleTestClass { Id = 5, Name = "Nested" });
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.GetNestedObject().Should().NotBeSameAs(original.GetNestedObject());
@@ -894,7 +894,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithPrivateCollection([1, 2, 3]);
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.GetItems().Should().NotBeSameAs(original.GetItems());
@@ -908,7 +908,7 @@ public class DeepCopy_Should
         original.AddItem("A");
         original.AddItem("B");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Items.Should().HaveCount(2, "backing fields should not cause duplication");
         _ = copy.Items.Should().BeEquivalentTo(["A", "B"]);
@@ -919,7 +919,7 @@ public class DeepCopy_Should
     {
         var original = new ClassWithConstants { InstanceValue = 100 };
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
         _ = copy.InstanceValue.Should().Be(100);
@@ -933,7 +933,7 @@ public class DeepCopy_Should
         original.AddToList1("A");
         original.AddToList2("B");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.List1.Should().HaveCount(1, "first backing field should not cause duplication");
         _ = copy.List2.Should().HaveCount(1, "second backing field should not cause duplication");
@@ -947,7 +947,7 @@ public class DeepCopy_Should
         var original = new ClassWithUnconventionalNaming();
         original.AddItem("Test");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Items.Should().Contain("Test");
     }
@@ -958,7 +958,7 @@ public class DeepCopy_Should
         var original = new ClassWithMixedBackingFields(5);
         original.AddItem("A");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Items.Should().HaveCount(1, "backing field with public property should not duplicate");
         _ = copy.Items.Should().BeEquivalentTo(["A"]);
@@ -971,7 +971,7 @@ public class DeepCopy_Should
         var original = new OuterClassWithBackingField();
         original.Inner.AddItem("X");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Inner.Should().NotBeSameAs(original.Inner);
         _ = copy.Inner.Items.Should().HaveCount(1, "nested object backing fields should not duplicate");
@@ -985,7 +985,7 @@ public class DeepCopy_Should
         original.AddItem("Item1");
         original.AddItem("Item2");
 
-        var copy = PocoCopier.DeepCopy(original);
+        var copy = ClassCopier.DeepCopy(original);
         copy.AddItem("Item3");
 
         _ = original.Items.Should().HaveCount(2, "original should not be affected by changes to copy");

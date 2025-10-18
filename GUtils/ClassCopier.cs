@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 using System.Net;
 using System.Reflection;
 
-public class PocoCopier
+public class ClassCopier
 {
     /// <summary>
     /// Creates a deep copy of an object using JSON serialization.
@@ -66,8 +66,9 @@ public class PocoCopier
                         var expectedName1 = $"_{char.ToLower(property.Name[0])}{property.Name[1..]}";
                         var expectedName2 = $"_{property.Name}";
 
-                        return (f.Name == expectedName1 || f.Name == expectedName2) && (f.FieldType == property.PropertyType ||
-                               property.PropertyType.IsAssignableFrom(f.FieldType));
+                        return 
+                            (f.Name == expectedName1 || f.Name == expectedName2) &&
+                            (f.FieldType == property.PropertyType || property.PropertyType.IsAssignableFrom(f.FieldType));
                     });
 
                     if (potentialBackingField != null)
@@ -114,7 +115,6 @@ public class PocoCopier
                 }
                 else
                 {
-                    // Only mark writable if the property actually has a setter
                     property.Writable = propInfo.GetSetMethod(true) != null;
                 }
             }
