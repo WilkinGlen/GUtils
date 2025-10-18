@@ -1088,27 +1088,16 @@ public class DeepCopy_Should
         public TestEnum Status { get; set; }
     }
 
-    private class ClassWithPrivateSetters
+    private class ClassWithPrivateSetters(int id, string name)
     {
-        public int Id { get; private set; }
-        public string Name { get; private set; }
-
-        public ClassWithPrivateSetters(int id, string name)
-        {
-            this.Id = id;
-            this.Name = name;
-        }
+        public int Id { get; private set; } = id;
+        public string Name { get; private set; } = name;
     }
 
-    private class ClassWithReadOnlyField
+    private class ClassWithReadOnlyField(string readOnlyValue)
     {
-        public readonly string? ReadOnlyValue;
+        public readonly string? ReadOnlyValue = readOnlyValue;
         public int Id { get; set; }
-
-        public ClassWithReadOnlyField(string readOnlyValue)
-        {
-            this.ReadOnlyValue = readOnlyValue;
-        }
     }
 
     private class ClassWithIndexer
@@ -1228,15 +1217,10 @@ public class DeepCopy_Should
         public required System.Net.IPAddress Address { get; set; }
     }
 
-    private class ClassWithMixedAccessModifiers
+    private class ClassWithMixedAccessModifiers(int privateValue)
     {
-        private readonly int _privateValue;
+        private readonly int _privateValue = privateValue;
         public string? PublicValue { get; set; }
-
-        public ClassWithMixedAccessModifiers(int privateValue)
-        {
-            this._privateValue = privateValue;
-        }
 
         public int GetPrivateValue()
         {
@@ -1262,14 +1246,9 @@ public class DeepCopy_Should
         }
     }
 
-    private class ClassWithPrivateNestedObject
+    private class ClassWithPrivateNestedObject(SimpleTestClass nested)
     {
-        private readonly SimpleTestClass _nested;
-
-        public ClassWithPrivateNestedObject(SimpleTestClass nested)
-        {
-            this._nested = nested;
-        }
+        private readonly SimpleTestClass _nested = nested;
 
         public SimpleTestClass GetNestedObject()
         {
@@ -1277,14 +1256,9 @@ public class DeepCopy_Should
         }
     }
 
-    private class ClassWithPrivateCollection
+    private class ClassWithPrivateCollection(List<int> items)
     {
-        private readonly List<int> _items;
-
-        public ClassWithPrivateCollection(List<int> items)
-        {
-            this._items = items;
-        }
+        private readonly List<int> _items = items;
 
         public List<int> GetItems()
         {
@@ -1328,14 +1302,9 @@ public class DeepCopy_Should
             return this._nested.Value;
         }
 
-        private class PrivateNestedClass
+        private class PrivateNestedClass(int value)
         {
-            public int Value { get; }
-
-            public PrivateNestedClass(int value)
-            {
-                this.Value = value;
-            }
+            public int Value { get; } = value;
         }
     }
 
@@ -1371,16 +1340,11 @@ public class DeepCopy_Should
         }
     }
 
-    private class ClassWithMixedBackingFields
+    private class ClassWithMixedBackingFields(int value)
     {
-        private readonly int _privateValue;
+        private readonly int _privateValue = value;
 
         public List<string> Items { get; } = [];
-
-        public ClassWithMixedBackingFields(int value)
-        {
-            this._privateValue = value;
-        }
 
         public void AddItem(string item)
         {
