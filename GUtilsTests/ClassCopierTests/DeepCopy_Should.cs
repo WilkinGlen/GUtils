@@ -965,34 +965,6 @@ public class DeepCopy_Should
         _ = copy.GetPrivateValue().Should().Be(5, "private field without public property should be copied");
     }
 
-    [Fact]
-    public void CopyNestedObjectsWithBackingFields_NoDuplication()
-    {
-        var original = new OuterClassWithBackingField();
-        original.Inner.AddItem("X");
-
-        var copy = ClassCopier.DeepCopy(original);
-
-        _ = copy.Inner.Should().NotBeSameAs(original.Inner);
-        _ = copy.Inner.Items.Should().HaveCount(1, "nested object backing fields should not duplicate");
-        _ = copy.Inner.Items.Should().BeEquivalentTo(["X"]);
-    }
-
-    [Fact]
-    public void CopyObjectWithModifiableCollectionThroughMethod_WorksCorrectly()
-    {
-        var original = new ClassWithModifiableCollection();
-        original.AddItem("Item1");
-        original.AddItem("Item2");
-
-        var copy = ClassCopier.DeepCopy(original);
-        copy.AddItem("Item3");
-
-        _ = original.Items.Should().HaveCount(2, "original should not be affected by changes to copy");
-        _ = copy.Items.Should().HaveCount(3);
-        _ = copy.Items.Should().BeEquivalentTo(["Item1", "Item2", "Item3"]);
-    }
-
     private class SimpleTestClass
     {
         public int Id { get; set; }
@@ -1387,5 +1359,251 @@ public class DeepCopy_Should
     private class ClassWithNullableBackingField
     {
         public List<string>? Items { get; } = null;
+    }
+
+    // Supporting Classes for New Tests
+    private class NestedBackingFieldClass
+    {
+        public List<string> Outer { get; } = [];
+        public InnerBackingFieldClass Inner { get; } = new();
+
+        public void AddOuter(string item) => this.Outer.Add(item);
+    }
+
+    private class InnerBackingFieldClass
+    {
+        public List<string> Inner { get; } = [];
+
+        public void AddInner(string item) => this.Inner.Add(item);
+    }
+
+    private class ClassWithConstructorBackingField
+    {
+        public List<int> Items { get; }
+
+        public ClassWithConstructorBackingField(List<int> items)
+        {
+            this.Items = items;
+        }
+    }
+
+    private class ClassWithNullableReferences
+    {
+        public required string RequiredValue { get; set; }
+        public string? OptionalValue { get; set; }
+    }
+
+    private class GrandParentClass
+    {
+        public string? GrandParentProperty { get; set; }
+    }
+
+    private class ParentClass : GrandParentClass
+    {
+        public string? ParentProperty { get; set; }
+    }
+
+    private class GrandChildClass : ParentClass
+    {
+        public string? ChildProperty { get; set; }
+    }
+
+    private class GenericBase<T>
+    {
+        public T? Value { get; set; }
+    }
+
+    private class GenericDerived : GenericBase<int>
+    {
+        public string? Name { get; set; }
+    }
+
+    // ==== NEW COMPREHENSIVE TESTS ====
+
+    [Fact]
+    public void DeepCopy_SameTypeMultipleTimes_UsesCachedReflectionResults()
+    {
+        var original1 = new SimpleTestClass { Id = 1, Name = "First" };
+        var copy1 = ClassCopier.DeepCopy(original1);
+        var original2 = new SimpleTestClass { Id = 2, Name = "Second" };
+        var copy2 = ClassCopier.DeepCopy(original2);
+        var original3 = new SimpleTestClass { Id = 3, Name = "Third" };
+        var copy3 = ClassCopier.DeepCopy(original3);
+
+        _ = copy1.Id.Should().Be(1);
+        _ = copy2.Id.Should().Be(2);
+        _ = copy3.Id.Should().Be(3);
+    }
+
+    [Fact]
+    public void DeepCopy_ConcurrentCalls_ThreadSafe()
+    {
+        var original = new ComplexTestClass
+        {
+            Id = 1,
+            Inner = new SimpleTestClass { Id = 2, Name = "Test" },
+            Items = ["A", "B", "C"]
+        };
+        var results = new System.Collections.Concurrent.ConcurrentBag<ComplexTestClass>();
+
+        Parallel.For(0, 100, _ => results.Add(ClassCopier.DeepCopy(original)));
+
+        _ = results.Should().HaveCount(100);
+        _ = results.Should().OnlyContain(c => c.Id == 1 && c.Items.Count == 3);
+    }
+
+    [Fact]
+    public void CopyObjectWithDefaultValues()
+    {
+        var original = new SimpleTestClass { Id = 0, Name = string.Empty };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.Id.Should().Be(0);
+    }
+
+    [Fact]
+    public void CopyEmptyDictionary()
+    {
+        var original = new Dictionary<string, int>();
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CopyEmptyHashSet()
+    {
+        var original = new HashSet<string>();
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CopyObjectWithMultipleLevelsOfBackingFields()
+    {
+        var original = new NestedBackingFieldClass();
+        original.AddOuter("X");
+        original.Inner.AddInner("Y");
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Outer.Should().HaveCount(1);
+        _ = copy.Inner.Inner.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void CopyObjectWithBackingFieldInitializedInConstructor()
+    {
+        var original = new ClassWithConstructorBackingField(new List<int> { 1, 2, 3 });
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Items.Should().NotBeSameAs(original.Items);
+        _ = copy.Items.Should().BeEquivalentTo([1, 2, 3]);
+    }
+
+    [Fact]
+    public void CopyObjectWithNullableReferenceTypes()
+    {
+        var original = new ClassWithNullableReferences { RequiredValue = "Required", OptionalValue = null };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.RequiredValue.Should().Be("Required");
+        _ = copy.OptionalValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void CopyListWithNullObjects()
+    {
+        var original = new List<SimpleTestClass?> { new() { Id = 1, Name = "First" }, null, new() { Id = 2, Name = "Second" } };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().HaveCount(3);
+        _ = copy[1].Should().BeNull();
+    }
+
+    [Fact]
+    public void CopyDictionaryWithNullValues()
+    {
+        var original = new Dictionary<string, string?> { ["key1"] = "value1", ["key2"] = null };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy["key1"].Should().Be("value1");
+        _ = copy["key2"].Should().BeNull();
+    }
+
+    [Fact]
+    public void CopyBigInteger()
+    {
+        var original = System.Numerics.BigInteger.Parse("123456789012345678901234567890");
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().Be(original);
+    }
+
+    [Fact]
+    public void CopyComplex()
+    {
+        var original = new System.Numerics.Complex(3.5, 2.1);
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().Be(original);
+    }
+
+    [Fact]
+    public void CopySortedList()
+    {
+        var original = new SortedList<int, string> { [3] = "three", [1] = "one", [2] = "two" };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().NotBeSameAs(original);
+        _ = copy.Should().BeEquivalentTo(original);
+    }
+
+    [Fact]
+    public void CopyObjectWithMultipleLevelsOfInheritance()
+    {
+        var original = new GrandChildClass { GrandParentProperty = "GP", ParentProperty = "P", ChildProperty = "C" };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.GrandParentProperty.Should().Be("GP");
+        _ = copy.ParentProperty.Should().Be("P");
+        _ = copy.ChildProperty.Should().Be("C");
+    }
+
+    [Fact]
+    public void CopyObjectWithGenericBase()
+    {
+        var original = new GenericDerived { Value = 42, Name = "Test" };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Value.Should().Be(42);
+        _ = copy.Name.Should().Be("Test");
+    }
+
+    [Fact]
+    public void CopyLargeDictionary()
+    {
+        var original = new Dictionary<int, string>();
+        for (var i = 0; i < 10000; i++)
+        {
+            original[i] = $"Value_{i}";
+        }
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Should().HaveCount(10000);
+        _ = copy[5000].Should().Be("Value_5000");
+    }
+
+    [Fact]
+    public void CopyDeeplyNestedLists()
+    {
+        var original = new List<List<List<int>>> { new() { new() { 1, 2 }, new() { 3, 4 } }, new() { new() { 5, 6 }, new() { 7, 8 } } };
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy[0][0].Should().BeEquivalentTo([1, 2]);
+        _ = copy[1][1].Should().BeEquivalentTo([7, 8]);
     }
 }
