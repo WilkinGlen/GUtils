@@ -1,4 +1,5 @@
-﻿namespace GUtilsTests.PocoCopierTests;
+﻿namespace GUtilsTests.ClassCopierTests;
+
 using FluentAssertions;
 using GUtils;
 using Xunit;
@@ -965,460 +966,33 @@ public class DeepCopy_Should
         _ = copy.GetPrivateValue().Should().Be(5, "private field without public property should be copied");
     }
 
-    private class SimpleTestClass
+    [Fact]
+    public void CopyNestedObjectsWithBackingFields_NoDuplication()
     {
-        public int Id { get; set; }
-        public required string Name { get; set; }
+        var original = new OuterClassWithBackingField();
+        original.Inner.AddItem("X");
+
+        var copy = ClassCopier.DeepCopy(original);
+
+        _ = copy.Inner.Should().NotBeSameAs(original.Inner);
+        _ = copy.Inner.Items.Should().HaveCount(1, "nested object backing fields should not duplicate");
+        _ = copy.Inner.Items.Should().BeEquivalentTo(["X"]);
     }
 
-    private class ComplexTestClass
+    [Fact]
+    public void CopyObjectWithModifiableCollectionThroughMethod_WorksCorrectly()
     {
-        public int Id { get; set; }
-        public required SimpleTestClass Inner { get; set; }
-        public required List<string> Items { get; set; }
+        var original = new ClassWithModifiableCollection();
+        original.AddItem("Item1");
+        original.AddItem("Item2");
+
+        var copy = ClassCopier.DeepCopy(original);
+        copy.AddItem("Item3");
+
+        _ = original.Items.Should().HaveCount(2, "original should not be affected by changes to copy");
+        _ = copy.Items.Should().HaveCount(3);
+        _ = copy.Items.Should().BeEquivalentTo(["Item1", "Item2", "Item3"]);
     }
-
-    private class ClassWithNestedCollections
-    {
-        public required Dictionary<string, List<int>> Data { get; set; }
-        public required int[][] JaggedArray { get; set; }
-    }
-
-    private class ClassWithDateTime
-    {
-        public DateTime CreatedDate { get; set; }
-        public DateTimeOffset ModifiedDate { get; set; }
-        public TimeSpan Duration { get; set; }
-    }
-
-    private class ClassWithNullableProperties
-    {
-        public int? NullableInt { get; set; }
-        public string? NullableString { get; set; }
-        public SimpleTestClass? NullableObject { get; set; }
-    }
-
-    private class ClassWithMethods
-    {
-        public int Value { get; set; }
-        public required string Name { get; set; }
-
-        public int GetDoubleValue()
-        {
-            return this.Value * 2;
-        }
-
-        public string GetFormattedName()
-        {
-            return $"Name: {this.Name}";
-        }
-    }
-
-    private class ClassWithEvents
-    {
-        public int Id { get; set; }
-        public event EventHandler? ValueChanged;
-        public event EventHandler<string>? NameChanged;
-
-        public void RaiseValueChanged()
-        {
-            ValueChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void RaiseNameChanged(string newName)
-        {
-            NameChanged?.Invoke(this, newName);
-        }
-    }
-
-    private class ClassWithDelegate
-    {
-        public int Id { get; set; }
-        public Action? OnExecute { get; set; }
-        public Func<int, int>? Calculator { get; set; }
-    }
-
-    private record TestRecord(int Id, string Name);
-
-    private class NodeWithCircularRef
-    {
-        public int Id { get; set; }
-        public NodeWithCircularRef? Parent { get; set; }
-        public NodeWithCircularRef? Child { get; set; }
-    }
-
-    private enum TestEnum
-    {
-        FirstValue,
-        SecondValue,
-        ThirdValue
-    }
-
-    private class ClassWithEnum
-    {
-        public int Id { get; set; }
-        public TestEnum Status { get; set; }
-    }
-
-    private class ClassWithPrivateSetters(int id, string name)
-    {
-        public int Id { get; private set; } = id;
-        public string Name { get; private set; } = name;
-    }
-
-    private class ClassWithReadOnlyField(string readOnlyValue)
-    {
-        public readonly string? ReadOnlyValue = readOnlyValue;
-        public int Id { get; set; }
-    }
-
-    private class ClassWithIndexer
-    {
-        private readonly Dictionary<string, int> _data = [];
-
-        public int this[string key]
-        {
-            get => this._data[key];
-            set => this._data[key] = value;
-        }
-
-        public void Add(string key, int value)
-        {
-            this._data[key] = value;
-        }
-    }
-
-    private class ClassWithStatic
-    {
-        public static int StaticValue { get; set; }
-        public int InstanceValue { get; set; }
-    }
-
-    private class BaseClass
-    {
-        public string? BaseProperty { get; set; }
-    }
-
-    private class DerivedClass : BaseClass
-    {
-        public string? DerivedProperty { get; set; }
-    }
-
-    private abstract class AbstractBase
-    {
-        public int BaseValue { get; set; }
-    }
-
-    private class ConcreteImplementation : AbstractBase
-    {
-        public int ConcreteValue { get; set; }
-    }
-
-    private interface ITestInterface
-    {
-        int Id { get; set; }
-        string Name { get; set; }
-    }
-
-    private class InterfaceImplementation : ITestInterface
-    {
-        public int Id { get; set; }
-        public required string Name { get; set; }
-    }
-
-    private class NestedLevel1
-    {
-        public string? Value { get; set; }
-        public NestedLevel2? Level2 { get; set; }
-    }
-
-    private class NestedLevel2
-    {
-        public string? Value { get; set; }
-        public NestedLevel3? Level3 { get; set; }
-    }
-
-    private class NestedLevel3
-    {
-        public string? Value { get; set; }
-        public NestedLevel4? Level4 { get; set; }
-    }
-
-    private class NestedLevel4
-    {
-        public string? Value { get; set; }
-    }
-
-    private class ClassWithInitOnlyProperty
-    {
-        public int Id { get; set; }
-        public string? InitValue { get; init; }
-    }
-
-    private class ClassWithRequiredProperty
-    {
-        public required int RequiredId { get; set; }
-        public required string RequiredName { get; set; }
-    }
-
-    private class ClassWithByteArray
-    {
-        public int Id { get; set; }
-        public required byte[] Data { get; set; }
-    }
-
-    private class ClassWithNestedRecord
-    {
-        public int Id { get; set; }
-        public required TestRecord Record { get; set; }
-    }
-
-    private class ClassWithTimeTypes
-    {
-        public TimeOnly Time { get; set; }
-        public DateOnly Date { get; set; }
-    }
-
-    private class ClassWithVersion
-    {
-        public required Version Version { get; set; }
-    }
-
-    private class ClassWithIPAddress
-    {
-        public required System.Net.IPAddress Address { get; set; }
-    }
-
-    private class ClassWithMixedAccessModifiers(int privateValue)
-    {
-        private readonly int _privateValue = privateValue;
-        public string? PublicValue { get; set; }
-
-        public int GetPrivateValue()
-        {
-            return this._privateValue;
-        }
-    }
-
-    private record struct TestRecordStruct(int Id, string Name);
-
-    private class ClassWithPrivateFields(int privateInt, string privateString)
-    {
-        private readonly int _privateInt = privateInt;
-        private readonly string _privateString = privateString;
-
-        public int GetPrivateInt()
-        {
-            return this._privateInt;
-        }
-
-        public string GetPrivateString()
-        {
-            return this._privateString;
-        }
-    }
-
-    private class ClassWithPrivateNestedObject(SimpleTestClass nested)
-    {
-        private readonly SimpleTestClass _nested = nested;
-
-        public SimpleTestClass GetNestedObject()
-        {
-            return this._nested;
-        }
-    }
-
-    private class ClassWithPrivateCollection(List<int> items)
-    {
-        private readonly List<int> _items = items;
-
-        public List<int> GetItems()
-        {
-            return this._items;
-        }
-    }
-
-    private class ClassWithExplicitBackingField
-    {
-        public List<string> Items { get; } = [];
-
-        public void AddItem(string item)
-        {
-            this.Items.Add(item);
-        }
-    }
-
-    private struct TestStruct
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public string? Name { get; set; }
-    }
-
-    private class ClassWithNestedPrivateClass
-    {
-        private readonly PrivateNestedClass _nested;
-
-        private ClassWithNestedPrivateClass(PrivateNestedClass nested)
-        {
-            this._nested = nested;
-        }
-
-        public static ClassWithNestedPrivateClass Create(int value)
-        {
-            return new ClassWithNestedPrivateClass(new PrivateNestedClass(value));
-        }
-
-        public int GetValue()
-        {
-            return this._nested.Value;
-        }
-
-        private class PrivateNestedClass(int value)
-        {
-            public int Value { get; } = value;
-        }
-    }
-
-    private class ClassWithConstants
-    {
-        public const int ConstantValue = 42;
-        public int InstanceValue { get; set; }
-    }
-
-    private class ClassWithMultipleBackingFields
-    {
-        public List<string> List1 { get; } = [];
-        public List<string> List2 { get; } = [];
-
-        public void AddToList1(string item)
-        {
-            this.List1.Add(item);
-        }
-
-        public void AddToList2(string item)
-        {
-            this.List2.Add(item);
-        }
-    }
-
-    private class ClassWithUnconventionalNaming
-    {
-        public List<string> Items { get; } = [];
-
-        public void AddItem(string item)
-        {
-            this.Items.Add(item);
-        }
-    }
-
-    private class ClassWithMixedBackingFields(int value)
-    {
-        private readonly int _privateValue = value;
-
-        public List<string> Items { get; } = [];
-
-        public void AddItem(string item)
-        {
-            this.Items.Add(item);
-        }
-
-        public int GetPrivateValue()
-        {
-            return this._privateValue;
-        }
-    }
-
-    private class OuterClassWithBackingField
-    {
-        public ClassWithExplicitBackingField Inner { get; set; } = new();
-    }
-
-    private class ClassWithModifiableCollection
-    {
-        private readonly List<string> _items = [];
-        public IReadOnlyList<string> Items => this._items;
-
-        public void AddItem(string item)
-        {
-            this._items.Add(item);
-        }
-    }
-
-    private class ClassWithTransformingProperty
-    {
-        private int _value;
-        public int DoubledValue => this._value * 2;
-
-        public void SetValue(int value)
-        {
-            this._value = value;
-        }
-    }
-
-    private class ClassWithNullableBackingField
-    {
-        public List<string>? Items { get; } = null;
-    }
-
-    // Supporting Classes for New Tests
-    private class NestedBackingFieldClass
-    {
-        public List<string> Outer { get; } = [];
-        public InnerBackingFieldClass Inner { get; } = new();
-
-        public void AddOuter(string item) => this.Outer.Add(item);
-    }
-
-    private class InnerBackingFieldClass
-    {
-        public List<string> Inner { get; } = [];
-
-        public void AddInner(string item) => this.Inner.Add(item);
-    }
-
-    private class ClassWithConstructorBackingField
-    {
-        public List<int> Items { get; }
-
-        public ClassWithConstructorBackingField(List<int> items)
-        {
-            this.Items = items;
-        }
-    }
-
-    private class ClassWithNullableReferences
-    {
-        public required string RequiredValue { get; set; }
-        public string? OptionalValue { get; set; }
-    }
-
-    private class GrandParentClass
-    {
-        public string? GrandParentProperty { get; set; }
-    }
-
-    private class ParentClass : GrandParentClass
-    {
-        public string? ParentProperty { get; set; }
-    }
-
-    private class GrandChildClass : ParentClass
-    {
-        public string? ChildProperty { get; set; }
-    }
-
-    private class GenericBase<T>
-    {
-        public T? Value { get; set; }
-    }
-
-    private class GenericDerived : GenericBase<int>
-    {
-        public string? Name { get; set; }
-    }
-
-    // ==== NEW COMPREHENSIVE TESTS ====
 
     [Fact]
     public void DeepCopy_SameTypeMultipleTimes_UsesCachedReflectionResults()
@@ -1446,7 +1020,7 @@ public class DeepCopy_Should
         };
         var results = new System.Collections.Concurrent.ConcurrentBag<ComplexTestClass>();
 
-        Parallel.For(0, 100, _ => results.Add(ClassCopier.DeepCopy(original)));
+        _ = Parallel.For(0, 100, _ => results.Add(ClassCopier.DeepCopy(original)));
 
         _ = results.Should().HaveCount(100);
         _ = results.Should().OnlyContain(c => c.Id == 1 && c.Items.Count == 3);
@@ -1497,7 +1071,7 @@ public class DeepCopy_Should
     [Fact]
     public void CopyObjectWithBackingFieldInitializedInConstructor()
     {
-        var original = new ClassWithConstructorBackingField(new List<int> { 1, 2, 3 });
+        var original = new ClassWithConstructorBackingField([1, 2, 3]);
         var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Items.Should().NotBeSameAs(original.Items);
@@ -1591,6 +1165,7 @@ public class DeepCopy_Should
         {
             original[i] = $"Value_{i}";
         }
+
         var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().HaveCount(10000);
