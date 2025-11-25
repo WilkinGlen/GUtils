@@ -1,7 +1,7 @@
 ﻿namespace GUtilsTests.ClassCopierTests;
 
 using FluentAssertions;
-using GUtils;
+using GUtils.ClassCopier;
 using Xunit;
 
 public class DeepCopy_Should
