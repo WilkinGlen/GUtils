@@ -106,10 +106,10 @@ public sealed class EdgeCases_Should
     {
         var actual = SwaggerDescriptionBuilder
             .Create()
-            .WithTag("Items", "- Item 1\n- Item 2")
+            .WithTag("Items", "• Item 1\n• Item 2")
             .Build();
 
-        _ = actual.Should().Contain("- Item 1\n- Item 2");
+        _ = actual.Should().Contain("• Item 1\n• Item 2");
     }
 
     [Fact]

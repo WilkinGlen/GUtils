@@ -141,8 +141,8 @@ public sealed class Performance_Should
         {
             for (var j = 0; j < itemsPerThread; j++)
             {
-                _ = builder.WithTitle($"Thread{i}-Title{j}");
-                _ = builder.WithTag($"Thread{i}-Tag{j}", $"Value{i}-{j}");
+                _ = builder.WithTitle($"Thread{i}_Title{j}");
+                _ = builder.WithTag($"Thread{i}_Tag{j}", $"Value{i}_{j}");
             }
         });
 
@@ -153,9 +153,9 @@ public sealed class Performance_Should
         {
             for (var j = 0; j < itemsPerThread; j++)
             {
-                _ = result.Should().Contain($"Thread{i}-Title{j}");
-                _ = result.Should().Contain($"Thread{i}-Tag{j}");
-                _ = result.Should().Contain($"Value{i}-{j}");
+                _ = result.Should().Contain($"Thread{i}_Title{j}");
+                _ = result.Should().Contain($"Thread{i}_Tag{j}");
+                _ = result.Should().Contain($"Value{i}_{j}");
             }
         }
 

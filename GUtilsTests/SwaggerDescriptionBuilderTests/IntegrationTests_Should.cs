@@ -88,7 +88,7 @@ public sealed class IntegrationTests_Should
             _ = builder.WithTitle($"Section {i}");
             for (var j = 0; j < 5; j++)
             {
-                _ = builder.WithTag($"Tag{i}-{j}", $"Value{i}-{j}");
+                _ = builder.WithTag($"Tag{i}_{j}", $"Value{i}_{j}");
             }
         }
 
@@ -96,8 +96,8 @@ public sealed class IntegrationTests_Should
 
         _ = actual.Should().Contain("Section 0");
         _ = actual.Should().Contain("Section 49");
-        _ = actual.Should().Contain("Tag0-0: Value0-0");
-        _ = actual.Should().Contain("Tag49-4: Value49-4");
+        _ = actual.Should().Contain("Tag0_0: Value0_0");
+        _ = actual.Should().Contain("Tag49_4: Value49_4");
     }
 
     [Fact]
@@ -140,9 +140,9 @@ public sealed class IntegrationTests_Should
         var actual = SwaggerDescriptionBuilder
             .Create()
             .WithTitle("Version History")
-            .WithTag("v1.0.0", "Initial release - 2024-01-01")
-            .WithTag("v1.1.0", "Added new features - 2024-02-01")
-            .WithTag("v2.0.0", "Breaking changes - 2024-03-01")
+            .WithTag("v1.0.0", "Initial release 2024/01/01")
+            .WithTag("v1.1.0", "Added new features 2024/02/01")
+            .WithTag("v2.0.0", "Breaking changes 2024/03/01")
             .Build();
 
         _ = actual.Should().Contain("## Version History");

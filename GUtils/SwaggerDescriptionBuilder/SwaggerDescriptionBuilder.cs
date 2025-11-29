@@ -14,6 +14,11 @@ public sealed class SwaggerDescriptionBuilder
     public SwaggerDescriptionBuilder WithTitle(string description)
     {
         ArgumentNullException.ThrowIfNull(description);
+        
+        if (description.Contains('-'))
+        {
+            throw new ArgumentException("Title cannot contain hyphens.", nameof(description));
+        }
 
         lock (this.myLock)
         {
@@ -27,6 +32,16 @@ public sealed class SwaggerDescriptionBuilder
     {
         ArgumentNullException.ThrowIfNull(tagName);
         ArgumentNullException.ThrowIfNull(tagValue);
+        
+        if (tagName.Contains('-'))
+        {
+            throw new ArgumentException("Tag name cannot contain hyphens.", nameof(tagName));
+        }
+        
+        if (tagValue.Contains('-'))
+        {
+            throw new ArgumentException("Tag value cannot contain hyphens.", nameof(tagValue));
+        }
 
         lock (this.myLock)
         {

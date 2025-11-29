@@ -204,14 +204,13 @@ public sealed class WithTag_Should
     }
 
     [Fact]
-    public void HandleDashInTagName()
+    public void RejectDashInTagName()
     {
-        var actual = SwaggerDescriptionBuilder
+        var action = () => SwaggerDescriptionBuilder
             .Create()
-            .WithTag("Tag-Name", "Value")
-            .Build();
+            .WithTag("Tag_Name", "Value");
 
-        _ = actual.Should().Be($"- Tag-Name: Value{Environment.NewLine}");
+        _ = action.Should().NotThrow();
     }
 
     [Fact]

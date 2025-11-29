@@ -11,9 +11,10 @@ public class TestEndpoint : EndpointWithoutRequest<string>
     {
         var builder = SwaggerDescriptionBuilder.SwaggerDescriptionBuilder
             .Create()
-            .WithTitle("Test Endpoint - Set in builder")
+            .WithTitle("Test Endpoint: Set in builder")
             .WithTag("Category", "Testing")
-            .WithTag("Version", "1.0");
+            .WithTag("Version", "1.0")
+            .WithTag("Date", $"{DateTime.UtcNow}");
 
         this.Get("/test");
         this.AllowAnonymous();

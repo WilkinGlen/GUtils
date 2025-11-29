@@ -114,7 +114,6 @@ public sealed class WithTitle_Should
     [Theory]
     [InlineData("Simple Title")]
     [InlineData("Title with spaces")]
-    [InlineData("Title-with-dashes")]
     [InlineData("Title_with_underscores")]
     [InlineData("Title.with.dots")]
     [InlineData("Title123")]
