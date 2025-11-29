@@ -1,7 +1,5 @@
 ﻿namespace GUtils.SwaggerDescriptionBuilder;
 
-using System.Threading;
-
 public sealed class SwaggerDescriptionBuilder
 {
     private readonly Lock myLock = new();

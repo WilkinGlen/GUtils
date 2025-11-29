@@ -1,9 +1,10 @@
 ﻿namespace GUtils.ClassCopier;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 public class ClassCopier
 {
