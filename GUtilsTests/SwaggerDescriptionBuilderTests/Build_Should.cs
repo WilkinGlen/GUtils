@@ -18,7 +18,7 @@ public sealed class Build_Should
     [Fact]
     public void ReturnCorrectDescriptionWithSingleTitle()
     {
-        var expected = $"##API for the GUtils ClassCopier utility{Environment.NewLine}";
+        var expected = $"## API for the GUtils ClassCopier utility{Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -31,7 +31,7 @@ public sealed class Build_Should
     [Fact]
     public void ReturnCorrectDescriptionWithMultipleTitles()
     {
-        var expected = $"##First Title{Environment.NewLine}##Second Title{Environment.NewLine}";
+        var expected = $"## First Title{Environment.NewLine}## Second Title{Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -72,7 +72,7 @@ public sealed class Build_Should
     [Fact]
     public void ReturnCorrectDescriptionWithTitleAndTags()
     {
-        var expected = $"##API Documentation{Environment.NewLine}- Author: Glen Wilkin{Environment.NewLine}- License: MIT{Environment.NewLine}";
+        var expected = $"## API Documentation{Environment.NewLine}- Author: Glen Wilkin{Environment.NewLine}- License: MIT{Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -87,7 +87,7 @@ public sealed class Build_Should
     [Fact]
     public void ReturnCorrectDescriptionWithComplexChaining()
     {
-        var expected = $"##Main Title{Environment.NewLine}- Tag1: Value1{Environment.NewLine}##Sub Title{Environment.NewLine}- Tag2: Value2{Environment.NewLine}";
+        var expected = $"## Main Title{Environment.NewLine}- Tag1: Value1{Environment.NewLine}## Sub Title{Environment.NewLine}- Tag2: Value2{Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -103,7 +103,7 @@ public sealed class Build_Should
     [Fact]
     public void HandleEmptyTitleString()
     {
-        var expected = $"##{Environment.NewLine}";
+        var expected = $"## {Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -129,7 +129,7 @@ public sealed class Build_Should
     [Fact]
     public void HandleWhitespaceTitleString()
     {
-        var expected = $"##   {Environment.NewLine}";
+        var expected = $"##    {Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -155,7 +155,7 @@ public sealed class Build_Should
     [Fact]
     public void HandleSpecialCharactersInTitle()
     {
-        var expected = $"##API & Documentation <with> special \"chars\"{Environment.NewLine}";
+        var expected = $"## API & Documentation <with> special \"chars\"{Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -181,7 +181,7 @@ public sealed class Build_Should
     [Fact]
     public void HandleUnicodeCharactersInTitle()
     {
-        var expected = $"##API 文档 🚀{Environment.NewLine}";
+        var expected = $"## API 文档 🚀{Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -208,7 +208,7 @@ public sealed class Build_Should
     public void HandleVeryLongTitle()
     {
         var longTitle = new string('A', 1000);
-        var expected = $"##" + longTitle + Environment.NewLine;
+        var expected = $"## " + longTitle + Environment.NewLine;
         
         var actual = SwaggerDescriptionBuilder
             .Create()
@@ -242,7 +242,7 @@ public sealed class Build_Should
         for (var i = 0; i < 100; i++)
         {
             _ = builder.WithTitle($"Title {i}");
-            expectedParts.Add($"##Title {i}{Environment.NewLine}");
+            expectedParts.Add($"## Title {i}{Environment.NewLine}");
         }
 
         var expected = string.Join(string.Empty, expectedParts);
@@ -337,7 +337,7 @@ public sealed class Build_Should
     [Fact]
     public void HandleNewlineCharactersInTitle()
     {
-        var expected = $"##Title\nWith\nNewlines{Environment.NewLine}";
+        var expected = $"## Title\nWith\nNewlines{Environment.NewLine}";
         
         var actual = SwaggerDescriptionBuilder
             .Create()

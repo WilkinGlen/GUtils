@@ -1,7 +1,10 @@
 ﻿namespace GUtils.SwaggerDescriptionBuilder;
 
+using System.Threading;
+
 public sealed class SwaggerDescriptionBuilder
 {
+    private readonly Lock myLock = new();
     private string? description;
 
     private SwaggerDescriptionBuilder() => this.description = string.Empty;
@@ -10,15 +13,34 @@ public sealed class SwaggerDescriptionBuilder
 
     public SwaggerDescriptionBuilder WithTitle(string description)
     {
-        this.description = this.description + $"##{description}{Environment.NewLine}";
+        ArgumentNullException.ThrowIfNull(description);
+
+        lock (this.myLock)
+        {
+            this.description += $"## {description}{Environment.NewLine}";
+        }
+
         return this;
     }
 
     public SwaggerDescriptionBuilder WithTag(string tagName, string tagValue)
     {
-        this.description = this.description + $"- {tagName}: {tagValue}{Environment.NewLine}";
+        ArgumentNullException.ThrowIfNull(tagName);
+        ArgumentNullException.ThrowIfNull(tagValue);
+
+        lock (this.myLock)
+        {
+            this.description += $"- {tagName}: {tagValue}{Environment.NewLine}";
+        }
+
         return this;
     }
 
-    public string Build() => $"""{this.description}""";
+    public string Build()
+    {
+        lock (this.myLock)
+        {
+            return $"""{this.description}""";
+        }
+    }
 }

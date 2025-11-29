@@ -22,7 +22,7 @@ public sealed class WithTitle_Should
             .WithTitle("My Title")
             .Build();
 
-        _ = actual.Should().Be($"##My Title{Environment.NewLine}");
+        _ = actual.Should().Be($"## My Title{Environment.NewLine}");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class WithTitle_Should
             .WithTitle("Third")
             .Build();
 
-        var expected = $"##First{Environment.NewLine}##Second{Environment.NewLine}##Third{Environment.NewLine}";
+        var expected = $"## First{Environment.NewLine}## Second{Environment.NewLine}## Third{Environment.NewLine}";
         _ = actual.Should().Be(expected);
     }
 
@@ -47,7 +47,7 @@ public sealed class WithTitle_Should
             .WithTitle(string.Empty)
             .Build();
 
-        _ = actual.Should().Be($"##{Environment.NewLine}");
+        _ = actual.Should().Be($"## {Environment.NewLine}");
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class WithTitle_Should
             .WithTitle("   ")
             .Build();
 
-        _ = actual.Should().Be($"##   {Environment.NewLine}");
+        _ = actual.Should().Be($"##    {Environment.NewLine}");
     }
 
     [Fact]

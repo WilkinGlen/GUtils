@@ -1,5 +1,6 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using GUtils.Api;
 using Scalar.AspNetCore;
 
 var bld = WebApplication.CreateBuilder();
@@ -49,21 +50,3 @@ app.MapScalarApiReference(o =>
 });
 
 app.Run();
-
-public class ContactInfoProcessor : NSwag.Generation.Processors.IDocumentProcessor
-{
-    public void Process(NSwag.Generation.Processors.Contexts.DocumentProcessorContext context)
-    {
-        context.Document.Info.Contact = new NSwag.OpenApiContact
-        {
-            Name = "Glen Wilkin",
-            Url = "https://github.com/WilkinGlen/GUtils"
-        };
-        
-        context.Document.Info.License = new NSwag.OpenApiLicense
-        {
-            Name = "MIT",
-            Url = "https://opensource.org/licenses/MIT"
-        };
-    }
-}

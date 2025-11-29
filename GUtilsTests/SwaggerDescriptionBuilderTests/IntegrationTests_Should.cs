@@ -17,7 +17,7 @@ public sealed class IntegrationTests_Should
             .WithTag("GitHub", "https://github.com/WilkinGlen/GUtils")
             .Build();
 
-        _ = actual.Should().Contain("##GUtils ClassCopier API");
+        _ = actual.Should().Contain("## GUtils ClassCopier API");
         _ = actual.Should().Contain("- Author: Glen Wilkin");
         _ = actual.Should().Contain("- Version: 1.0.0");
         _ = actual.Should().Contain("- License: MIT");
@@ -37,9 +37,9 @@ public sealed class IntegrationTests_Should
             .WithTag("Email", "contact@example.com")
             .Build();
 
-        _ = actual.Should().Contain("##Overview");
-        _ = actual.Should().Contain("##Authentication");
-        _ = actual.Should().Contain("##Contact");
+        _ = actual.Should().Contain("## Overview");
+        _ = actual.Should().Contain("## Authentication");
+        _ = actual.Should().Contain("## Contact");
         _ = actual.IndexOf("Overview", StringComparison.Ordinal)
             .Should().BeLessThan(actual.IndexOf("Authentication", StringComparison.Ordinal));
         _ = actual.IndexOf("Authentication", StringComparison.Ordinal)
@@ -57,9 +57,9 @@ public sealed class IntegrationTests_Should
             .Build();
 
         _ = actual.Should().NotContain("- ");
-        _ = actual.Should().Contain("##Title 1");
-        _ = actual.Should().Contain("##Title 2");
-        _ = actual.Should().Contain("##Title 3");
+        _ = actual.Should().Contain("## Title 1");
+        _ = actual.Should().Contain("## Title 2");
+        _ = actual.Should().Contain("## Title 3");
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public sealed class IntegrationTests_Should
             .WithTag("Link", "[GitHub](https://github.com)")
             .Build();
 
-        _ = actual.Should().MatchRegex(@"##API Documentation\r?\n");
+        _ = actual.Should().MatchRegex(@"## API Documentation\r?\n");
         _ = actual.Should().Contain("**Glen Wilkin**");
         _ = actual.Should().Contain("[GitHub](https://github.com)");
     }
@@ -145,7 +145,7 @@ public sealed class IntegrationTests_Should
             .WithTag("v2.0.0", "Breaking changes - 2024-03-01")
             .Build();
 
-        _ = actual.Should().Contain("##Version History");
+        _ = actual.Should().Contain("## Version History");
         _ = actual.Should().Contain("v1.0.0");
         _ = actual.Should().Contain("v1.1.0");
         _ = actual.Should().Contain("v2.0.0");
@@ -158,12 +158,9 @@ public sealed class IntegrationTests_Should
             .Select(_ => SwaggerDescriptionBuilder.Create())
             .ToList();
 
-        Parallel.ForEach(builders, (builder, state, index) =>
-        {
-            builder
+        _ = Parallel.ForEach(builders, (builder, state, index) => builder
                 .WithTitle($"Title {index}")
-                .WithTag($"Tag {index}", $"Value {index}");
-        });
+                .WithTag($"Tag {index}", $"Value {index}"));
 
         var results = builders.Select(b => b.Build()).ToList();
 
@@ -206,11 +203,11 @@ public sealed class IntegrationTests_Should
 
         var lines = actual.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
         _ = lines.Should().HaveCount(6);
-        _ = lines[0].Should().StartWith("##T1");
+        _ = lines[0].Should().StartWith("## T1");
         _ = lines[1].Should().StartWith("- Tag1");
-        _ = lines[2].Should().StartWith("##T2");
+        _ = lines[2].Should().StartWith("## T2");
         _ = lines[3].Should().StartWith("- Tag2");
-        _ = lines[4].Should().StartWith("##T3");
+        _ = lines[4].Should().StartWith("## T3");
         _ = lines[5].Should().StartWith("- Tag3");
     }
 
@@ -222,7 +219,7 @@ public sealed class IntegrationTests_Should
             .WithTitle("API")
             .Build();
 
-        _ = actual.Should().Be($"##API{Environment.NewLine}");
+        _ = actual.Should().Be($"## API{Environment.NewLine}");
     }
 
     [Fact]
@@ -241,9 +238,9 @@ public sealed class IntegrationTests_Should
             .WithTag("License", "MIT")
             .Build();
 
-        _ = actual.Should().Contain("##ClassCopier API Documentation");
-        _ = actual.Should().Contain("##Getting Started");
-        _ = actual.Should().Contain("##Additional Resources");
+        _ = actual.Should().Contain("## ClassCopier API Documentation");
+        _ = actual.Should().Contain("## Getting Started");
+        _ = actual.Should().Contain("## Additional Resources");
         _ = actual.Should().Contain("Deep copy objects in .NET");
         _ = actual.Should().Contain("https://github.com/WilkinGlen/GUtils");
     }

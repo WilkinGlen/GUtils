@@ -1,6 +1,6 @@
-using FastEndpoints;
-
 namespace GUtils.Api.Endpoints;
+
+using FastEndpoints;
 
 /// <summary>
 /// Test endpoint to verify API functionality
