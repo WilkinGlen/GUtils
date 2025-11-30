@@ -69,9 +69,4 @@ Supports .NET 8 and .NET 9 (and future versions).</Description>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Include README in package -->
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
 </Project>
