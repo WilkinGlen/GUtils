@@ -36,9 +36,19 @@ public sealed class SwaggerDescriptionBuilder
             throw new ArgumentException("Tag name cannot contain hyphens.", nameof(tagName));
         }
         
+        if (tagName.Contains('#'))
+        {
+            throw new ArgumentException("Tag name cannot contain hash symbols.", nameof(tagName));
+        }
+        
         if (tagValue.Contains('-'))
         {
             throw new ArgumentException("Tag value cannot contain hyphens.", nameof(tagValue));
+        }
+        
+        if (tagValue.Contains('#'))
+        {
+            throw new ArgumentException("Tag value cannot contain hash symbols.", nameof(tagValue));
         }
 
         lock (this.myLock)
