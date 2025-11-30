@@ -178,13 +178,10 @@ public sealed class Clear_Should
     {
         var builder = SwaggerDescriptionBuilder.Create();
 
-        _ = Parallel.For(0, 100, i =>
-        {
-            _ = builder
+        _ = Parallel.For(0, 100, i => _ = builder
                 .WithTitle($"Title {i}")
                 .WithTag($"Tag{i}", $"Value{i}")
-                .Clear();
-        });
+                .Clear());
 
         var result = builder.Build();
         _ = result.Should().BeEmpty();

@@ -40,7 +40,11 @@ public class ClassCopier
     {
         private readonly Dictionary<Type, List<MemberInfo>> memberCache = [];
         private readonly Dictionary<Type, HashSet<string>> readOnlyPropertiesCache = [];
+#if NET9_0_OR_GREATER
         private readonly Lock cacheLock = new();
+#else
+        private readonly object cacheLock = new();
+#endif
 
         protected override List<MemberInfo> GetSerializableMembers(Type objectType)
         {

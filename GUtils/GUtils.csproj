@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- Target Framework -->
-    <TargetFramework>net9.0</TargetFramework>
+    <!-- Target Frameworks - Multi-targeting for .NET 8 and 9 -->
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -15,13 +15,14 @@
 
     <!-- Package Description -->
     <Title>GUtils - Essential .NET Utilities</Title>
-    <Description>GUtils provides high-performance utilities for .NET 9+ including:
+    <Description>GUtils provides high-performance utilities for .NET 8+ including:
 • ClassCopier: Thread-safe deep object cloning with JSON serialization
 • SwaggerDescriptionBuilder: Fluent, thread-safe API for creating structured Swagger/OpenAPI descriptions
 • SwaggerDescriptionInterrogator: High-performance parser for extracting metadata from Swagger descriptions
 
-All components are optimized for .NET 9 with span-based parsing, minimal allocations, and full thread safety.</Description>
-    <PackageTags>utilities;swagger;openapi;deep-copy;clone;api-documentation;fastendpoints;performance;thread-safe;dotnet9</PackageTags>
+All components are optimized with span-based parsing, minimal allocations, and full thread safety.
+Supports .NET 8 and .NET 9 (and future versions).</Description>
+    <PackageTags>utilities;swagger;openapi;deep-copy;clone;api-documentation;fastendpoints;performance;thread-safe;dotnet8;dotnet9;multi-targeting</PackageTags>
     
     <!-- Links -->
     <PackageProjectUrl>https://github.com/WilkinGlen/GUtils</PackageProjectUrl>
@@ -39,7 +40,8 @@ All components are optimized for .NET 9 with span-based parsing, minimal allocat
 • ClassCopier: Deep object cloning utility with support for complex types
 • SwaggerDescriptionBuilder: Fluent API for creating structured Swagger descriptions
 • SwaggerDescriptionInterrogator: High-performance description parser with span-based optimization
-• Full .NET 9 optimization with minimal allocations
+• Multi-targeting support for .NET 8 and .NET 9 (forward compatible with .NET 10+)
+• Full optimization with minimal allocations
 • Complete thread safety across all components
 • Comprehensive test coverage (290+ tests)</PackageReleaseNotes>
 
@@ -65,6 +67,11 @@ All components are optimized for .NET 9 with span-based parsing, minimal allocat
     
     <!-- Source Link for GitHub -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Include README in package -->
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,11 @@
 
 public sealed class SwaggerDescriptionBuilder
 {
+#if NET9_0_OR_GREATER
     private readonly Lock myLock = new();
+#else
+    private readonly object myLock = new();
+#endif
     private string? description;
 
     private SwaggerDescriptionBuilder() => this.description = string.Empty;
