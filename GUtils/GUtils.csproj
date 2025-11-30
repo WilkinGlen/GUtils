@@ -1,13 +1,70 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- Target Framework -->
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Package Identity -->
+    <PackageId>GUtils</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Glen Wilkin</Authors>
+    <Company>Glen Wilkin</Company>
+
+    <!-- Package Description -->
+    <Title>GUtils - Essential .NET Utilities</Title>
+    <Description>GUtils provides high-performance utilities for .NET 9+ including:
+• ClassCopier: Thread-safe deep object cloning with JSON serialization
+• SwaggerDescriptionBuilder: Fluent, thread-safe API for creating structured Swagger/OpenAPI descriptions
+• SwaggerDescriptionInterrogator: High-performance parser for extracting metadata from Swagger descriptions
+
+All components are optimized for .NET 9 with span-based parsing, minimal allocations, and full thread safety.</Description>
+    <PackageTags>utilities;swagger;openapi;deep-copy;clone;api-documentation;fastendpoints;performance;thread-safe;dotnet9</PackageTags>
+    
+    <!-- Links -->
+    <PackageProjectUrl>https://github.com/WilkinGlen/GUtils</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/WilkinGlen/GUtils</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <!-- Legal -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright (c) 2024 Glen Wilkin</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+    <!-- Release Notes -->
+    <PackageReleaseNotes>v1.0.0 - Initial Release
+• ClassCopier: Deep object cloning utility with support for complex types
+• SwaggerDescriptionBuilder: Fluent API for creating structured Swagger descriptions
+• SwaggerDescriptionInterrogator: High-performance description parser with span-based optimization
+• Full .NET 9 optimization with minimal allocations
+• Complete thread safety across all components
+• Comprehensive test coverage (290+ tests)</PackageReleaseNotes>
+
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Symbols & Debugging -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- Build Configuration -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Dependencies -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    
+    <!-- Source Link for GitHub -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

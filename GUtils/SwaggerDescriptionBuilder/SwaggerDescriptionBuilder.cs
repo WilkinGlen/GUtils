@@ -59,6 +59,16 @@ public sealed class SwaggerDescriptionBuilder
         return this;
     }
 
+    public SwaggerDescriptionBuilder Clear()
+    {
+        lock (this.myLock)
+        {
+            this.description = string.Empty;
+        }
+
+        return this;
+    }
+
     public string Build()
     {
         lock (this.myLock)
