@@ -40,58 +40,63 @@ public sealed class WithTag_Should
     }
 
     [Fact]
-    public void HandleEmptyTagName()
+    public void ThrowArgumentException_WhenTagNameIsEmpty()
     {
-        var actual = SwaggerDescriptionBuilder
+        var action = () => SwaggerDescriptionBuilder
             .Create()
-            .WithTag(string.Empty, "Value")
-            .Build();
+            .WithTag(string.Empty, "Value");
 
-        _ = actual.Should().Be($"- : Value{Environment.NewLine}");
+        _ = action.Should().Throw<ArgumentException>()
+            .WithParameterName("tagName")
+            .WithMessage("Tag name cannot be empty or whitespace.*");
     }
 
     [Fact]
-    public void HandleEmptyTagValue()
+    public void ThrowArgumentException_WhenTagValueIsEmpty()
     {
-        var actual = SwaggerDescriptionBuilder
+        var action = () => SwaggerDescriptionBuilder
             .Create()
-            .WithTag("Name", string.Empty)
-            .Build();
+            .WithTag("Name", string.Empty);
 
-        _ = actual.Should().Be($"- Name: {Environment.NewLine}");
+        _ = action.Should().Throw<ArgumentException>()
+            .WithParameterName("tagValue")
+            .WithMessage("Tag value cannot be empty or whitespace.*");
     }
 
     [Fact]
-    public void HandleBothEmpty()
+    public void ThrowArgumentException_WhenBothEmpty()
     {
-        var actual = SwaggerDescriptionBuilder
+        var action = () => SwaggerDescriptionBuilder
             .Create()
-            .WithTag(string.Empty, string.Empty)
-            .Build();
+            .WithTag(string.Empty, string.Empty);
 
-        _ = actual.Should().Be($"- : {Environment.NewLine}");
+        _ = action.Should().Throw<ArgumentException>()
+            .WithParameterName("tagName")
+            .WithMessage("Tag name cannot be empty or whitespace.*");
     }
 
     [Fact]
-    public void HandleWhitespaceInTagName()
+    public void ThrowArgumentException_WhenTagNameIsWhitespace()
     {
-        var actual = SwaggerDescriptionBuilder
+        var action = () => SwaggerDescriptionBuilder
             .Create()
-            .WithTag("   ", "Value")
-            .Build();
+            .WithTag("   ", "Value");
 
-        _ = actual.Should().Be($"-    : Value{Environment.NewLine}");
+        _ = action.Should().Throw<ArgumentException>()
+            .WithParameterName("tagName")
+            .WithMessage("Tag name cannot be empty or whitespace.*");
     }
 
     [Fact]
-    public void HandleWhitespaceInTagValue()
+    public void ThrowArgumentException_WhenTagValueIsWhitespace()
     {
-        var actual = SwaggerDescriptionBuilder
+        var action = () => SwaggerDescriptionBuilder
             .Create()
-            .WithTag("Name", "   ")
-            .Build();
+            .WithTag("Name", "   ");
 
-        _ = actual.Should().Be($"- Name:    {Environment.NewLine}");
+        _ = action.Should().Throw<ArgumentException>()
+            .WithParameterName("tagValue")
+            .WithMessage("Tag value cannot be empty or whitespace.*");
     }
 
     [Fact]

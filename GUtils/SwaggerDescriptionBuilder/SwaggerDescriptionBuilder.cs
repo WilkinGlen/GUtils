@@ -35,6 +35,16 @@ public sealed class SwaggerDescriptionBuilder
         ArgumentNullException.ThrowIfNull(tagName);
         ArgumentNullException.ThrowIfNull(tagValue);
         
+        if (string.IsNullOrWhiteSpace(tagName))
+        {
+            throw new ArgumentException("Tag name cannot be empty or whitespace.", nameof(tagName));
+        }
+        
+        if (string.IsNullOrWhiteSpace(tagValue))
+        {
+            throw new ArgumentException("Tag value cannot be empty or whitespace.", nameof(tagValue));
+        }
+        
         if (tagName.Contains('-'))
         {
             throw new ArgumentException("Tag name cannot contain hyphens.", nameof(tagName));

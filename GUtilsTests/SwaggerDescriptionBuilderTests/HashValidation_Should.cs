@@ -241,12 +241,14 @@ public sealed class HashValidation_Should
     }
 
     [Fact]
-    public void WithTag_AllowEmptyStringsWithoutHashSymbols()
+    public void WithTag_ThrowArgumentException_WhenTagValueIsEmpty()
     {
         var action = () => SwaggerDescriptionBuilder
             .Create()
             .WithTag("TagName", string.Empty);
 
-        _ = action.Should().NotThrow<ArgumentException>("*hash*");
+        _ = action.Should().Throw<ArgumentException>()
+            .WithParameterName("tagValue")
+            .WithMessage("Tag value cannot be empty or whitespace.*");
     }
 }
