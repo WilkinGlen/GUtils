@@ -175,24 +175,24 @@ public class TryDeepCopy_Should
     [Fact]
     public void ReturnTrueAndCopy_ForEnum()
     {
-        var original = TestEnum.SecondValue;
+        var original = TestEnumValues.SecondValue;
 
         var result = ClassCopier.TryDeepCopy(original, out var copy);
 
         _ = result.Should().BeTrue();
-        _ = copy.Should().Be(TestEnum.SecondValue);
+        _ = copy.Should().Be(TestEnumValues.SecondValue);
     }
 
     [Fact]
     public void ReturnTrueAndCopy_ForClassWithEnum()
     {
-        var original = new ClassWithEnum { Id = 5, Status = TestEnum.ThirdValue };
+        var original = new ClassWithEnum { Id = 5, Status = TestEnumValues.ThirdValue };
 
         var result = ClassCopier.TryDeepCopy(original, out var copy);
 
         _ = result.Should().BeTrue();
         _ = copy!.Id.Should().Be(5);
-        _ = copy.Status.Should().Be(TestEnum.ThirdValue);
+        _ = copy.Status.Should().Be(TestEnumValues.ThirdValue);
     }
 
     [Fact]

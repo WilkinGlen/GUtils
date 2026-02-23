@@ -3,6 +3,7 @@ namespace GUtilsTests.ClassCopierTests;
 using System.Net;
 using FluentAssertions;
 using GUtils.ClassCopier;
+using Xunit;
 
 public class DeepCopyMany_Should
 {
@@ -229,17 +230,17 @@ public class DeepCopyMany_Should
     {
         var originals = new List<ClassWithEnum>
         {
-            new() { Id = 1, Status = TestEnum.FirstValue },
-            new() { Id = 2, Status = TestEnum.SecondValue },
-            new() { Id = 3, Status = TestEnum.ThirdValue }
+            new() { Id = 1, Status = TestEnumValues.FirstValue },
+            new() { Id = 2, Status = TestEnumValues.SecondValue },
+            new() { Id = 3, Status = TestEnumValues.ThirdValue }
         };
 
         var copies = ClassCopier.DeepCopyMany(originals).ToList();
 
         _ = copies.Should().HaveCount(3);
-        _ = copies[0].Status.Should().Be(TestEnum.FirstValue);
-        _ = copies[1].Status.Should().Be(TestEnum.SecondValue);
-        _ = copies[2].Status.Should().Be(TestEnum.ThirdValue);
+        _ = copies[0].Status.Should().Be(TestEnumValues.FirstValue);
+        _ = copies[1].Status.Should().Be(TestEnumValues.SecondValue);
+        _ = copies[2].Status.Should().Be(TestEnumValues.ThirdValue);
     }
 
     [Fact]

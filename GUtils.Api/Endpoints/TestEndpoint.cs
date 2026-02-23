@@ -30,6 +30,6 @@ public class TestEndpoint : EndpointWithoutRequest<string>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        await this.SendAsync("Test endpoint works!", cancellation: ct);
+        _ = await this.Send.StringAsync("Test endpoint works!", cancellation: ct);
     }
 }

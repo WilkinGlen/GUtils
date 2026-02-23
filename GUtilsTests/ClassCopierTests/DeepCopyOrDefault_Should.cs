@@ -169,13 +169,13 @@ public class DeepCopyOrDefault_Should
     [Fact]
     public void ReturnCopy_ForClassWithEnum()
     {
-        var original = new ClassWithEnum { Id = 5, Status = TestEnum.ThirdValue };
-        var defaultValue = new ClassWithEnum { Id = -1, Status = TestEnum.FirstValue };
+        var original = new ClassWithEnum { Id = 5, Status = TestEnumValues.ThirdValue };
+        var defaultValue = new ClassWithEnum { Id = -1, Status = TestEnumValues.FirstValue };
 
         var result = ClassCopier.DeepCopyOrDefault(original, defaultValue);
 
         _ = result!.Id.Should().Be(5);
-        _ = result.Status.Should().Be(TestEnum.ThirdValue);
+        _ = result.Status.Should().Be(TestEnumValues.ThirdValue);
     }
 
     [Fact]

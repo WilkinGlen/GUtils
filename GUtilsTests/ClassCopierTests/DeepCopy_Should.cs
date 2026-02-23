@@ -423,7 +423,7 @@ public class DeepCopy_Should
     [Fact]
     public void CopyEnum()
     {
-        var original = TestEnum.SecondValue;
+        var original = TestEnumValues.SecondValue;
 
         var copy = ClassCopier.DeepCopy(original);
 
@@ -433,12 +433,12 @@ public class DeepCopy_Should
     [Fact]
     public void CopyObjectWithEnum()
     {
-        var original = new ClassWithEnum { Id = 1, Status = TestEnum.SecondValue };
+        var original = new ClassWithEnum { Id = 1, Status = TestEnumValues.SecondValue };
 
         var copy = ClassCopier.DeepCopy(original);
 
         _ = copy.Should().NotBeSameAs(original);
-        _ = copy.Status.Should().Be(TestEnum.SecondValue);
+        _ = copy.Status.Should().Be(TestEnumValues.SecondValue);
     }
 
     [Fact]

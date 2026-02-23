@@ -66,7 +66,7 @@ Supports .NET 8, .NET 9, and .NET 10.</Description>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     
     <!-- Source Link for GitHub -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

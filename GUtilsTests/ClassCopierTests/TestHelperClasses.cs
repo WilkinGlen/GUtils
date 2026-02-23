@@ -82,7 +82,7 @@ internal class NodeWithCircularRef
     public NodeWithCircularRef? Child { get; set; }
 }
 
-internal enum TestEnum
+internal enum TestEnumValues
 {
     FirstValue,
     SecondValue,
@@ -92,7 +92,7 @@ internal enum TestEnum
 internal class ClassWithEnum
 {
     public int Id { get; set; }
-    public TestEnum Status { get; set; }
+    public TestEnumValues Status { get; set; }
 }
 
 internal class ClassWithPrivateSetters(int id, string name)
@@ -380,14 +380,13 @@ internal class ClassWithModifiableCollection
     }
 }
 
-internal class ClassWithTransformingProperty
+internal static class ClassWithTransformingProperty
 {
-    private int _value;
-    public int DoubledValue => this._value * 2;
+    public static int DoubledValue { get => field * 2; private set; }
 
-    public void SetValue(int value)
+    public static void SetValue(int value)
     {
-        this._value = value;
+        DoubledValue = value;
     }
 }
 
