@@ -4,15 +4,8 @@ using System.Buffers;
 
 public sealed class SwaggerDescriptionBuilder
 {
-#if NET9_0_OR_GREATER
     private readonly Lock myLock = new();
-#else
-    private readonly object myLock = new();
-#endif
-
-#if NET8_0_OR_GREATER
     private static readonly SearchValues<char> ForbiddenTagCharacters = SearchValues.Create(['-', '#']);
-#endif
 
     private string? description;
 
