@@ -36,6 +36,77 @@ public class ClassCopier
             "Deserialization resulted in null. The type may not be supported for deserialization.");
     }
 
+    /// <summary>
+    /// Attempts to create a deep copy of an object using JSON serialization.
+    /// </summary>
+    /// <typeparam name="T">The type of object to copy. Must be JSON-serializable.</typeparam>
+    /// <param name="source">The source object to copy</param>
+    /// <param name="copy">When this method returns true, contains the deep copy; otherwise, the default value.</param>
+    /// <returns>true if the copy was successful; otherwise, false.</returns>
+    public static bool TryDeepCopy<T>(T? source, out T? copy)
+    {
+        copy = default;
+
+        if (source is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var jsonString = JsonConvert.SerializeObject(source, SharedSettings);
+            copy = JsonConvert.DeserializeObject<T>(jsonString, SharedSettings);
+            return copy is not null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Creates a deep copy of an object, or returns a default value if the copy fails.
+    /// </summary>
+    /// <typeparam name="T">The type of object to copy. Must be JSON-serializable.</typeparam>
+    /// <param name="source">The source object to copy</param>
+    /// <param name="defaultValue">The value to return if the copy fails.</param>
+    /// <returns>A deep copy of the source object, or the default value if copying fails.</returns>
+    public static T? DeepCopyOrDefault<T>(T? source, T? defaultValue = default)
+    {
+        return TryDeepCopy(source, out var copy) ? copy : defaultValue;
+    }
+
+    /// <summary>
+    /// Creates deep copies of multiple objects.
+    /// </summary>
+    /// <typeparam name="T">The type of objects to copy. Must be JSON-serializable.</typeparam>
+    /// <param name="sources">The collection of source objects to copy</param>
+    /// <param name="maxDegreeOfParallelism">Optional maximum degree of parallelism. If greater than 1, copies are made in parallel.</param>
+    /// <returns>An enumerable of deep copies of the source objects.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="sources"/> is null.</exception>
+    public static IEnumerable<T> DeepCopyMany<T>(IEnumerable<T> sources, int maxDegreeOfParallelism = 1)
+    {
+        ArgumentNullException.ThrowIfNull(sources);
+
+        var sourceList = sources.ToList();
+
+        if (sourceList.Count == 0)
+        {
+            return [];
+        }
+
+        if (maxDegreeOfParallelism <= 1)
+        {
+            return sourceList.Select(DeepCopy);
+        }
+
+        return sourceList
+            .AsParallel()
+            .WithDegreeOfParallelism(Math.Min(maxDegreeOfParallelism, Environment.ProcessorCount))
+            .Select(DeepCopy)
+            .ToList();
+    }
+
     private sealed class IgnoreDelegateContractResolver : DefaultContractResolver
     {
         private readonly Dictionary<Type, List<MemberInfo>> memberCache = [];

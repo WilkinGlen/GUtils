@@ -1,5 +1,7 @@
 ﻿namespace GUtils.SwaggerDescriptionBuilder;
 
+using System.Buffers;
+
 public sealed class SwaggerDescriptionBuilder
 {
 #if NET9_0_OR_GREATER
@@ -7,6 +9,11 @@ public sealed class SwaggerDescriptionBuilder
 #else
     private readonly object myLock = new();
 #endif
+
+#if NET8_0_OR_GREATER
+    private static readonly SearchValues<char> ForbiddenTagCharacters = SearchValues.Create(['-', '#']);
+#endif
+
     private string? description;
 
     private SwaggerDescriptionBuilder() => this.description = string.Empty;
@@ -16,7 +23,8 @@ public sealed class SwaggerDescriptionBuilder
     public SwaggerDescriptionBuilder WithTitle(string description)
     {
         ArgumentNullException.ThrowIfNull(description);
-        
+
+        // Titles only forbid hyphens (not hash symbols - those are allowed for markdown)
         if (description.Contains('-'))
         {
             throw new ArgumentException("Title cannot contain hyphens.", nameof(description));
@@ -34,36 +42,19 @@ public sealed class SwaggerDescriptionBuilder
     {
         ArgumentNullException.ThrowIfNull(tagName);
         ArgumentNullException.ThrowIfNull(tagValue);
-        
+
         if (string.IsNullOrWhiteSpace(tagName))
         {
             throw new ArgumentException("Tag name cannot be empty or whitespace.", nameof(tagName));
         }
-        
+
         if (string.IsNullOrWhiteSpace(tagValue))
         {
             throw new ArgumentException("Tag value cannot be empty or whitespace.", nameof(tagValue));
         }
-        
-        if (tagName.Contains('-'))
-        {
-            throw new ArgumentException("Tag name cannot contain hyphens.", nameof(tagName));
-        }
-        
-        if (tagName.Contains('#'))
-        {
-            throw new ArgumentException("Tag name cannot contain hash symbols.", nameof(tagName));
-        }
-        
-        if (tagValue.Contains('-'))
-        {
-            throw new ArgumentException("Tag value cannot contain hyphens.", nameof(tagValue));
-        }
-        
-        if (tagValue.Contains('#'))
-        {
-            throw new ArgumentException("Tag value cannot contain hash symbols.", nameof(tagValue));
-        }
+
+        ValidateTagCharacters(tagName, "Tag name", nameof(tagName));
+        ValidateTagCharacters(tagValue, "Tag value", nameof(tagValue));
 
         lock (this.myLock)
         {
@@ -90,4 +81,30 @@ public sealed class SwaggerDescriptionBuilder
             return $"""{this.description}""";
         }
     }
+
+#if NET8_0_OR_GREATER
+    private static void ValidateTagCharacters(string value, string fieldName, string paramName)
+    {
+        var index = value.AsSpan().IndexOfAny(ForbiddenTagCharacters);
+        if (index >= 0)
+        {
+            var forbiddenChar = value[index];
+            var charDescription = forbiddenChar == '-' ? "hyphens" : "hash symbols";
+            throw new ArgumentException($"{fieldName} cannot contain {charDescription}.", paramName);
+        }
+    }
+#else
+    private static void ValidateTagCharacters(string value, string fieldName, string paramName)
+    {
+        if (value.Contains('-'))
+        {
+            throw new ArgumentException($"{fieldName} cannot contain hyphens.", paramName);
+        }
+
+        if (value.Contains('#'))
+        {
+            throw new ArgumentException($"{fieldName} cannot contain hash symbols.", paramName);
+        }
+    }
+#endif
 }

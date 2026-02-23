@@ -1,11 +1,16 @@
 ﻿namespace GUtils.SwaggerDescriptionInterrogator;
 
+using System.Buffers;
 using System.Text.Json;
 
 public static class SwaggerDescriptionInterrogator
 {
+#if NET8_0_OR_GREATER
+    private static readonly SearchValues<char> LineSeparators = SearchValues.Create(['\r', '\n']);
+#else
     private static readonly char[] LineSeparators = ['\r', '\n'];
-    
+#endif
+
     public static List<ApiPathDescription>? GetPathDescriptions(string swaggerJson)
     {
         ArgumentNullException.ThrowIfNull(swaggerJson);
@@ -68,7 +73,7 @@ public static class SwaggerDescriptionInterrogator
         {
             var lineStart = currentIndex;
             var lineEnd = span[currentIndex..].IndexOfAny(LineSeparators);
-            
+
             if (lineEnd == -1)
             {
                 lineEnd = span.Length - currentIndex;
